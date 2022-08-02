@@ -6,7 +6,7 @@
 /*   By: aaouni <aaouni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/28 01:08:51 by aaouni            #+#    #+#             */
-/*   Updated: 2022/08/02 15:53:50 by aaouni           ###   ########.fr       */
+/*   Updated: 2022/08/02 23:00:10 by aaouni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ void	child2(t_varint vint, t_varstr2 vstr, char **env, char *cmd2)
 	if (vint.pid2 == 0)
 	{
 		vstr.cmd2 = get_path_cmd(cmd2, vstr.path);
+		// printf("child 2 %p\n", vstr.cmd2);
 		if (!vstr.cmd2)
 		{
 			ft_putstr("pipex: command not found: ");
@@ -62,19 +63,24 @@ void	child2(t_varint vint, t_varstr2 vstr, char **env, char *cmd2)
 	}
 }
 
-void	open_infile(char *infile, t_varint *vint)
+int	open_infile(char *infile, t_varint *vint)
 {
 	if (access(infile, R_OK) < 0)
 	{
 		perror("pipex");
-		exit(1);
+		return (0);
 	}
 	vint->infile = open(infile, O_RDONLY);
 	if (vint->infile == -1)
 	{
-		perror("open");
-		exit(1);
+		// perror("open infile");
+		ft_putstr("open : Permission denied: ");
+		ft_putstr(infile);
+		ft_putstr("\n");
+		return (0);
+		// exit(1);
 	}
+	return (1);
 }
 
 void	open_outfile(char *outfile, t_varint *vint)
@@ -91,16 +97,20 @@ int	main(int argc, char **argv, char **env)
 {
 	t_varint	vint;
 	t_varstr2	vstr;
+	int			i;
 
+	i = 1;
 	if (argc == 5)
 	{
 		vstr.path = get_path_env(env);
-		open_infile(argv[1], &vint);
+		i = open_infile(argv[1], &vint);
 		open_outfile(argv[4], &vint);
 		if (pipe(vint.fd) == -1)
 			exit(1);
-		vint.pid1 = fork();
-		child1(vint, vstr, env, argv[2]);
+		if (i == 1)
+			vint.pid1 = fork();
+		if (i == 1)
+			child1(vint, vstr, env, argv[2]);
 		vint.pid2 = fork();
 		child2(vint, vstr, env, argv[3]);
 		close(vint.fd[1]);

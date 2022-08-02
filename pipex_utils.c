@@ -6,11 +6,12 @@
 /*   By: aaouni <aaouni@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/30 15:40:16 by aaouni            #+#    #+#             */
-/*   Updated: 2022/08/02 15:26:01 by aaouni           ###   ########.fr       */
+/*   Updated: 2022/08/02 22:58:44 by aaouni           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
+#include <string.h>
 
 int	len_2d(char **str)
 {
@@ -74,6 +75,12 @@ char	**get_path_cmd(char *str, char **path)
 	cmd = ft_split(str, ' ');
 	if (access(cmd[0], X_OK) == 0)
 		return (cmd);
+	// else if (ft_strncmp(cmd[0], "./", 2) == 0 && str)
+	// {
+	// 	// (void)str;
+	// 	perror("pipex");
+	// 	exit(1);
+	// }
 	while (path[i])
 	{
 		path_cmd = ft_strjoin(path[i], cmd[0]);
